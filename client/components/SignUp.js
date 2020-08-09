@@ -25,9 +25,10 @@ import { Meteor } from "meteor/meteor";
  * @return {Promise<String|undefined>} Redirect URL or `undefined` if no
  *   `challenge` argument was passed.
  */
-function callSignUp({ challenge, email, password }) {
+function callSignUp({ challenge, email, password, type }) {
   return new Promise((resolve, reject) => {
-    Accounts.createUser({ email, password }, (error) => {
+    const userType = type || 'customer';
+    Accounts.createUser({ email, password, profile: {type: userType} }, (error) => {
       if (error) {
         reject(error);
       } else {
@@ -87,7 +88,7 @@ function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
-  const { login_challenge: challenge } = queryString.parse(location.search);
+  const { login_challenge: challenge, type } = queryString.parse(location.search);
 
   const {
     getErrors,
@@ -98,7 +99,7 @@ function SignUp() {
       setIsSubmitting(true);
       let redirectUrl;
       try {
-        redirectUrl = await callSignUp({ challenge, ...formData });
+        redirectUrl = await callSignUp({ challenge, ...formData, type });
       } catch (error) {
         setSubmitError(error.message);
         setIsSubmitting(false);

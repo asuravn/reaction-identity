@@ -44,8 +44,9 @@ WebApp.connectHandlers.use("/login", (req, res) => {
         return res.end();
       }
 
-      if (loginAction === "signup") {
-        res.writeHead(301, { Location: `/account/enroll?login_challenge=${challenge}` });
+      if (loginAction === "signup" || loginAction === "shopSignup") {
+        const type = loginAction === "shopSignup" ? "shop" : "";
+        res.writeHead(301, { Location: `/account/enroll?login_challenge=${challenge}&type=${type}` });
       } else {
         res.writeHead(301, { Location: `/account/login?login_challenge=${challenge}` });
       }
